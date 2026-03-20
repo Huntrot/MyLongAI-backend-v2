@@ -2,6 +2,7 @@ from ultralytics import YOLO
 import numpy as np
 import cv2
 from app.core.config import settings
+from fastapi import HTTPException
 
 # Load model 1 lần
 model = YOLO(settings.MODEL_PATH)
@@ -31,6 +32,9 @@ async def detect_image(file):
     np_arr = np.frombuffer(contents, np.uint8)
     img = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
 
+    if img is None:
+        raise HTTPException(status_code=400, detail="File không phải ảnh hợp lệ hoặc không có bánh tráng")
+    
     detections = process_frame(img)
 
     return {

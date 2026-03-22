@@ -6,13 +6,13 @@ from fastapi import HTTPException
 
 # Load model 1 lần
 model = YOLO(settings.MODEL_PATH)
-
+model(np.zeros((320, 320, 3), dtype=np.uint8))
 
 def process_frame(img):
-    # Resize tối ưu
-    img = cv2.resize(img, (640, 640))
+    
+    img = cv2.resize(img, (320, 320))
 
-    results = model(img)
+    results = model(img, imgsz=320, conf=0.5, device="cpu")
 
     detections = []
 

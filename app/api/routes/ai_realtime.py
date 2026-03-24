@@ -1,10 +1,12 @@
+import gc
+
 from fastapi import APIRouter
 from pydantic import BaseModel, Field
 import base64
 import numpy as np
 import cv2
 
-from app.services.ai_service import process_frame
+from app.services.ai_service import detect_realtime_base64, process_frame
 
 router = APIRouter()
 
@@ -12,8 +14,7 @@ router = APIRouter()
 class FrameRequest(BaseModel):
     image: str = Field(
         ...,
-        description="Ảnh dạng base64 từ camera frontend",
-        example="iVBORw0KGgoAAAANSUhEUgAA..."
+        description="Ảnh dạng base64 từ camera frontend"
     )
 
 
@@ -38,17 +39,4 @@ class FrameRequest(BaseModel):
     """,
 )
 async def detect_realtime(req: FrameRequest):
-    try:
-        img_data = base64.b64decode(req.image)
-        np_arr = np.frombuffer(img_data, np.uint8)
-        img = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
-
-        detections = process_frame(img)
-
-        return {
-            "message": "Realtime processed",
-            "objects": detections
-        }
-
-    except Exception as e:
-        return {"error": str(e)}
+    return await detect_realtime_base64(req.image)

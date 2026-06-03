@@ -19,7 +19,7 @@ os.environ["YOLO_CONFIG_DIR"] = "/tmp/yolo"
 # ==============================
 # LOAD MODEL 1 LẦN DUY NHẤT
 # ==============================
-model = YOLO(settings.MODEL_PATH)
+model = YOLO(settings.DETECT_MODEL_PATH)
 
 # warmup (giảm lag lần đầu)
 model(np.zeros((320, 320, 3), dtype=np.uint8))

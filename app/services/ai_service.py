@@ -17,12 +17,21 @@ from app.core.config import settings
 os.environ["YOLO_CONFIG_DIR"] = "/tmp/yolo"
 
 # ==============================
-# LOAD MODEL 1 LẦN DUY NHẤT
+# LAZY LOAD MODEL
 # ==============================
-model = YOLO(settings.DETECT_MODEL_PATH)
+model = None
 
-# warmup (giảm lag lần đầu)
-model(np.zeros((320, 320, 3), dtype=np.uint8))
+def get_model():
+    global model
+
+    if model is None:
+        print("Loading YOLO model...")
+
+        model = YOLO(settings.DETECT_MODEL_PATH)
+
+        print("YOLO model loaded.")
+
+    return model
 
 # ==============================
 # LIMIT CONCURRENCY (QUAN TRỌNG)
@@ -47,6 +56,9 @@ def allow_request(interval=3):
 # CORE AI PROCESS
 # ==============================
 def process_frame(img):
+
+    model = get_model()
+
     img = cv2.resize(img, (320, 320))
 
     results = model(
@@ -69,6 +81,9 @@ def process_frame(img):
 
     # ⚠️ QUAN TRỌNG: clear memory
     del results
+
+    gc.collect()
+
     return detections
 
 

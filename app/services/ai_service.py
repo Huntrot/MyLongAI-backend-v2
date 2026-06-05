@@ -5,6 +5,7 @@ import time
 import base64
 
 import numpy as np
+from app.services.debug import log_memory
 import cv2
 from ultralytics import YOLO
 from fastapi import HTTPException
@@ -31,6 +32,7 @@ def get_model():
 
         print("YOLO model loaded.")
 
+        log_memory("After YOLO load")
     return model
 
 # ==============================
@@ -57,6 +59,8 @@ def allow_request(interval=3):
 # ==============================
 def process_frame(img):
 
+    log_memory("Before detect")
+
     model = get_model()
 
     img = cv2.resize(img, (320, 320))
@@ -79,10 +83,16 @@ def process_frame(img):
                 "bbox": box.xyxy[0].tolist()
             })
 
-    # ⚠️ QUAN TRỌNG: clear memory
+    # Giải phóng từng object
+    for r in results:
+        del r
+
     del results
+    del img
 
     gc.collect()
+
+    log_memory("After detect")
 
     return detections
 
@@ -101,6 +111,7 @@ async def detect_image(file):
 
         np_arr = np.frombuffer(contents, np.uint8)
         img = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+        log_memory("After decode image")
 
         if img is None:
             raise HTTPException(status_code=400, detail="File không hợp lệ")
@@ -134,6 +145,7 @@ async def detect_realtime_base64(image_base64: str):
 
         np_arr = np.frombuffer(img_data, np.uint8)
         img = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+        log_memory("After decode image")
 
         if img is None:
             raise HTTPException(status_code=400, detail="Ảnh decode lỗi")

@@ -7,7 +7,7 @@ import base64
 import numpy as np
 from app.services.debug import log_memory
 import cv2
-from ultralytics import YOLO
+# from ultralytics import YOLO
 from fastapi import HTTPException
 
 from app.core.config import settings
@@ -26,6 +26,9 @@ def get_model():
     global model
 
     if model is None:
+
+        from ultralytics import YOLO
+
         print("Loading YOLO model...")
 
         model = YOLO(settings.DETECT_MODEL_PATH)
@@ -33,6 +36,7 @@ def get_model():
         print("YOLO model loaded.")
 
         log_memory("After YOLO load")
+
     return model
 
 # ==============================

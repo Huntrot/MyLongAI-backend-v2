@@ -1,8 +1,8 @@
 from app.services.debug import log_memory
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-# from app.api.routes import ai_detect, ai_realtime, health, drying
-from app.api.routes import health, drying
+from app.api.routes import ai_detect, ai_realtime, health, drying
+# from app.api.routes import health, drying
 app = FastAPI(
     title="MyLongAI Backend",
     description="""
@@ -27,8 +27,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# app.include_router(ai_detect.router, prefix="/ai", tags=["AI"])
-# app.include_router(ai_realtime.router, prefix="/ai", tags=["AI Realtime"])
+app.include_router(ai_detect.router, prefix="/ai", tags=["AI"])
+app.include_router(ai_realtime.router, prefix="/ai", tags=["AI Realtime"])
 app.include_router(health.router, prefix="/health", tags=["Health"])
 app.include_router(drying.router, prefix="/drying", tags=["Drying Prediction"])
 @app.get("/")

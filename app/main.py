@@ -1,3 +1,4 @@
+from app.services.debug import log_memory
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.routes import ai_detect, ai_realtime, health, drying
@@ -11,6 +12,12 @@ app = FastAPI(
     """,
     version="1.0.0"
 )
+    
+@app.on_event("startup")
+async def startup_event():
+    print("=" * 50)
+    log_memory("Startup")
+    print("=" * 50)
 
 app.add_middleware(
     CORSMiddleware,

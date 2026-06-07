@@ -1,8 +1,8 @@
 from app.services.debug import log_memory
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.routes import ai_detect, ai_realtime, health, drying
-
+# from app.api.routes import ai_detect, ai_realtime, health, drying
+from app.api.routes import health, drying
 app = FastAPI(
     title="MyLongAI Backend",
     description="""
